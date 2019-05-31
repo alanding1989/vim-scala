@@ -39,7 +39,7 @@ syn sync minlines=200 maxlines=1000
 
 syn keyword scalaKeyword catch do else final finally for forSome if
 syn keyword scalaKeyword match return throw try while yield macro
-syn keyword scalaKeyword class trait object extends with nextgroup=scalaInstanceDeclaration skipwhite
+syn keyword scalaKeyword class trait object extends with nextgroup=scalaClass skipwhite
 syn keyword scalaKeyword case nextgroup=scalaKeyword,scalaCaseFollowing skipwhite
 syn keyword scalaKeyword val nextgroup=scalaNameDefinition,scalaQuasiQuotes skipwhite
 syn keyword scalaKeyword def var nextgroup=scalaNameDefinition skipwhite
@@ -73,16 +73,26 @@ syn match scalaOperator "||"
 syn match scalaOperator "&&"
 hi link scalaOperator Special
 
-syn match scalaNameDefinition /\<[_A-Za-z0-9$]\+\>/ contained nextgroup=scalaPostNameDefinition,scalaVariableDeclarationList
+syn match scalaNameDefinition /\<[_A-Za-z0-9$]\+\>/ contained contains=scalaMain nextgroup=scalaPostNameDefinition,scalaVariableDeclarationList
 syn match scalaNameDefinition /`[^`]\+`/ contained nextgroup=scalaPostNameDefinition
 syn match scalaVariableDeclarationList /\s*,\s*/ contained nextgroup=scalaNameDefinition
 syn match scalaPostNameDefinition /\_s*:\_s*/ contained nextgroup=scalaTypeDeclaration
+syn keyword scalaMain main contained
+syn keyword scalaMainArgs args
+hi link scalaMain Function
+hi link scalaMainArgs Normal
 hi link scalaNameDefinition Function
 
-syn match scalaInstanceDeclaration /\<[_\.A-Za-z0-9$]\+\>/ contained nextgroup=scalaInstanceHash
-syn match scalaInstanceDeclaration /`[^`]\+`/ contained
-syn match scalaInstanceHash /#/ contained nextgroup=scalaInstanceDeclaration
-hi link scalaInstanceDeclaration Special
+
+syn match scalaExternal /^\(import\|package\).*/ contains=scalaClass,scalaImport skipwhite
+syn keyword scalaImport import package contained
+hi link scalaExternal Normal
+hi link scalaImport Statement
+
+syn match scalaClass /\<\(_\|\u\|\.\)[A-Za-z0-9$]\+\>/ contained nextgroup=scalaInstanceHash
+syn match scalaClass /`[^`]\+`/ contained
+syn match scalaInstanceHash /#/ contained nextgroup=scalaClass
+hi link scalaClass Special
 hi link scalaInstanceHash Type
 
 syn match scalaUnimplemented /???/
@@ -130,13 +140,10 @@ hi link scalaKeywordModifier Function
 hi link scalaSpecialFunction Function
 
 syn keyword scalaSpecial this true false ne eq
-syn keyword scalaSpecial new nextgroup=scalaInstanceDeclaration skipwhite
+syn keyword scalaSpecial new nextgroup=scalaClass skipwhite
 syn match scalaSpecial "\%(=>\|⇒\|<-\|←\|->\|→\)"
 syn match scalaSpecial /`[^`]\+`/  " Backtick literals
 hi link scalaSpecial PreProc
-
-syn keyword scalaExternal package import
-hi link scalaExternal Include
 
 syn match scalaStringEmbeddedQuote /\\"/ contained
 syn region scalaString start=/"/ end=/"/ contains=scalaStringEmbeddedQuote,scalaEscapedChar,scalaUnicodeChar
